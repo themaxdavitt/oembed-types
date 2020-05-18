@@ -1,0 +1,126 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$comment": "Buyer beware: this schema is based off the oEmbed spec (as of commit 2542814), but is also subject to change based on how that spec has been interpreted in the wild.",
+	"type": "object",
+	"properties": {
+		"type": {
+			"description": "The resource type.",
+			"type": "string",
+			"enum": ["photo", "video", "link", "rich"]
+		},
+		"version": {
+			"description": "The oEmbed version number. This must be `\"1.0\"`.",
+			"type": "string",
+			"enum": ["1.0"]
+		},
+		"title": {
+		  	"description": "A text title, describing the resource.",
+			"type": "string"
+		},
+		"author_name": {
+			"description": "The name of the author/owner of the resource.",
+			"type": "string"
+		},
+		"author_url": {
+			"description": "A URL for the author/owner of the resource.",
+			"type": "string",
+			"format": "uri"
+		},
+		"provider_name": {
+			"description": "The name of the resource provider.",
+			"type": "string"
+		},
+		"provider_url": {
+			"description": "The URL of the resource provider.",
+			"type": "string",
+			"format": "uri"
+		},
+		"cache_age": {
+			"description": "The *suggested* cache lifetime for this resource, in seconds. Consumers may choose to use this value or not.",
+			"type": "number"
+		},
+		"thumbnail_url": {
+			"description": "A URL to a thumbnail image representing the resource. The thumbnail must respect any `maxwidth` and `maxheight` parameters. If this parameter is present, `thumbnail_width` and `thumbnail_height` must also be present.",
+			"type": "string",
+			"format": "uri"
+		},
+		"thumbnail_width": {
+			"description": "The width of the optional thumbnail. If this parameter is present, `thumbnail_url` and `thumbnail_height` must also be present.",
+			"type": "number"
+		},
+		"thumbnail_height": {
+			"description": "The height of the optional thumbnail. If this parameter is present, `thumbnail_url` and `thumbnail_width` must also be present.",
+			"type": "number"
+		}
+	},
+	"additionalProperties": true,
+	"required": ["type", "version"],
+	"dependencies": {
+		"thumbnail_url": ["thumbnail_width", "thumbnail_height"],
+		"thumbnail_width": ["thumbnail_url", "thumbnail_height"],
+		"thumbnail_height": ["thumbnail_url", "thumbnail_width"]
+	},
+	"allOf": [
+		{
+			"if": { "properties": { "type": { "const": "photo" } } },
+			"then": {
+				"properties": {
+					"url": {
+						"description": "The source URL of the image. Consumers should be able to insert this URL into an `<img>` element. Only HTTP and HTTPS URLs are valid.",
+						"type": "string",
+						"format": "uri"
+					},
+					"width": {
+						"description": "The width in pixels of the image specified in the `url` parameter.",
+						"type": "number"
+					},
+					"height": {
+						"description": "The height in pixels of the image specified in the `url` parameter.",
+						"type": "number"
+					}
+				},
+				"required": ["url", "width", "height"]
+			}
+		},
+		{
+			"if": { "properties": { "type": { "const": "video" } } },
+			"then": {
+				"properties": {
+					"html": {
+						"description": "The HTML required to embed a video player. The HTML should have no padding or margins. Consumers may wish to load the HTML in an off-domain iframe to avoid XSS vulnerabilities.",
+						"type": "string"
+					},
+					"width": {
+						"description": "The width in pixels required to display the HTML.",
+						"type": "number"
+					},
+					"height": {
+						"description": "The height in pixels required to display the HTML.",
+						"type": "number"
+					}
+				},
+				"required": ["html", "width", "height"]
+			}
+		},
+		{
+			"if": { "properties": { "type": { "const": "rich" } } },
+			"then": {
+				"properties": {
+					"html": {
+						"description": "The HTML required to display the resource. The HTML should have no padding or margins. Consumers may wish to load the HTML in an off-domain iframe to avoid XSS vulnerabilities. The markup should be valid XHTML 1.0 Basic.",
+						"type": "string"
+					},
+					"width": {
+						"description": "The width in pixels required to display the HTML.",
+						"type": "number"
+					},
+					"height": {
+						"description": "The height in pixels required to display the HTML.",
+						"type": "number"
+					}
+				},
+				"required": ["html", "width", "height"]
+			}
+		}
+	]
+}
