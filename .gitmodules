@@ -1,3 +1,4 @@
 [submodule "oembed"]
 	path = oembed
-	url = https://github.com/iamcal/oembed
+	url = https://github.com/themaxdavitt/oembed.git
+	branch = master
